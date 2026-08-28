@@ -468,8 +468,15 @@ def handle_update(update):
     t = TEXTS[lang]
     step = state.get("step")
 
-    # --- /start har doim joriy jarayonni bekor qilib, salomlashadi ---
-    if text in ("/start", "/bekor", "/cancel"):
+    # --- /start har doim joriy jarayonni bekor qilib, til tanlashni ko'rsatadi ---
+    if text == "/start":
+        state["step"] = None
+        state["order"] = {}
+        set_user_state(chat_id, state)
+        send_message(chat_id, TEXTS["uz"]["choose_lang"], lang_keyboard())
+        return
+
+    if text in ("/bekor", "/cancel"):
         state["step"] = None
         state["order"] = {}
         set_user_state(chat_id, state)
