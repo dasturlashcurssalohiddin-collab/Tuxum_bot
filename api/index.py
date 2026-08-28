@@ -502,7 +502,11 @@ def handle_update(update):
     if ADMIN_CHAT_ID and str(chat_id) == str(ADMIN_CHAT_ID):
         trigger_text = text if text else caption
 
-        if trigger_text.startswith("/elon"):
+        if trigger_text in ("/start", "/bekor", "/cancel"):
+            clear_admin_broadcast(chat_id)
+            # /start davom etib, oddiy foydalanuvchi oqimiga (asosiy menyu) o'tadi
+
+        elif trigger_text.startswith("/elon") or trigger_text.startswith("/e'lon") or trigger_text.startswith("/e’lon"):
             clear_admin_broadcast(chat_id)
             set_admin_broadcast(chat_id, {"step": "wait_photo"})
             send_message(chat_id, "📸 E'lon uchun rasmni yuboring:")
@@ -573,6 +577,14 @@ def handle_update(update):
     t = TEXTS[lang]
     step = state.get("step")
 
+    # --- /start har doim joriy jarayonni bekor qilib, asosiy menyuga qaytaradi ---
+    if text in ("/start", "/bekor", "/cancel"):
+        state["step"] = None
+        state["order"] = {}
+        set_user_state(chat_id, state)
+        send_message(chat_id, t["welcome"].format(name=name), main_menu_keyboard(lang))
+        return
+
     # --- Buyurtma bosqichlari ---
     if step == "await_qty":
         qty = parse_qty(text)
@@ -623,10 +635,6 @@ def handle_update(update):
         return
 
     # --- Menyu / buyruqlar ---
-    if text in ("/start",):
-        send_message(chat_id, t["welcome"].format(name=name), main_menu_keyboard(lang))
-        return
-
     if text in (t["menu_lang"],) or text == "/til":
         send_message(chat_id, TEXTS["uz"]["choose_lang"], lang_keyboard())
         return
