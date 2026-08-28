@@ -23,10 +23,16 @@ DEPLOY QO'LLANMASI (VERCEL):
                              (masalan: https://tuxum-market-default-rtdb.firebaseio.com)
        WEBHOOK_SECRET    -> o'zingiz o'ylab topgan maxfiy so'z (ixtiyoriy, xavfsizlik uchun)
 
-4) E'LON (BROADCAST) YUBORISH: ADMIN_CHAT_ID sifatida ko'rsatilgan chatdan botga
-   "/eloncall <matn>" yuboring — barcha ro'yxatdan o'tgan foydalanuvchilarga xabar ketadi.
-   Rasm bilan yubormoqchi bo'lsangiz: rasmni botga yuboring va uning tavsifi (caption)
-   qismiga "/eloncall <matn>" deb yozing — rasm + matn hammasiga birga boradi.
+4) E'LON (BROADCAST) YARATISH — bosqichma-bosqich: ADMIN_CHAT_ID sifatida
+   ko'rsatilgan chatdan botga "/elon" yuboring. Bot ketma-ket so'raydi:
+     1) Rasm yuborasiz
+     2) Qaysi tugmalar bo'lsin — Narx, Ma'lumot, Joylashuv, Aloqa (bir nechtasini
+        tanlash mumkin), so'ng "✅ Tayyor" tugmasini bosasiz
+     3) Har bir tanlangan tugma uchun matn kiritasiz (masalan Narx uchun narx matni)
+   Shundan so'ng e'lon (rasm + tugmalar) barcha ro'yxatdan o'tgan foydalanuvchilarga
+   yuboriladi. Foydalanuvchi tugmani bosganda, siz o'sha tugma uchun kiritgan matn
+   unga alohida xabar sifatida yuboriladi. Tugma nomlari har foydalanuvchining o'z
+   tiliga (uz/ru/en/de) qarab avtomatik tarjima qilinadi.
 
 5) Deploy qilgandan so'ng, Telegram webhookni shu manzilga ulang (brauzerda oching):
    https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=https://<vercel-domeningiz>/api/bot
@@ -67,7 +73,7 @@ EGG_PRICE = 1500  # 1 dona tuxum narxi (so'm) — xohlasangiz o'zgartiring
 
 TEXTS = {
     "uz": {
-        "choose_lang": "Tilni tanlang / Choose language / Выберите язык:",
+        "choose_lang": "Tilni tanlang / Choose language / Выберите язык / Sprache wählen:",
         "welcome": "Assalomu alaykum, {name}! 🥚\nTuxum Market botiga xush kelibsiz.\nQuyidagi menyudan birini tanlang:",
         "menu_order": "🛒 Buyurtma berish",
         "menu_price": "💰 Narxlar",
@@ -86,9 +92,13 @@ TEXTS = {
         "new_order_admin": "🆕 Yangi buyurtma!\n👤 {name} (@{username})\n🥚 {qty} dona — {total} so'm\n📍 {address}\n📱 {phone}",
         "back": "⬅️ Orqaga",
         "unknown": "Kechirasiz, tushunmadim. Menyudan tanlang yoki savolingizni yozing.",
+        "btn_narx": "💰 Narx",
+        "btn_malumot": "ℹ️ Ma'lumot",
+        "btn_joylashuv": "📍 Joylashuv",
+        "btn_aloqa": "📞 Aloqa",
     },
     "ru": {
-        "choose_lang": "Tilni tanlang / Choose language / Выберите язык:",
+        "choose_lang": "Tilni tanlang / Choose language / Выберите язык / Sprache wählen:",
         "welcome": "Здравствуйте, {name}! 🥚\nДобро пожаловать в Tuxum Market.\nВыберите пункт меню:",
         "menu_order": "🛒 Заказать",
         "menu_price": "💰 Цены",
@@ -107,9 +117,13 @@ TEXTS = {
         "new_order_admin": "🆕 Новый заказ!\n👤 {name} (@{username})\n🥚 {qty} шт — {total} сум\n📍 {address}\n📱 {phone}",
         "back": "⬅️ Назад",
         "unknown": "Извините, не понял. Выберите пункт меню или напишите вопрос.",
+        "btn_narx": "💰 Цена",
+        "btn_malumot": "ℹ️ Информация",
+        "btn_joylashuv": "📍 Локация",
+        "btn_aloqa": "📞 Контакты",
     },
     "en": {
-        "choose_lang": "Tilni tanlang / Choose language / Выберите язык:",
+        "choose_lang": "Tilni tanlang / Choose language / Выберите язык / Sprache wählen:",
         "welcome": "Hello, {name}! 🥚\nWelcome to Tuxum Market bot.\nChoose an option below:",
         "menu_order": "🛒 Place order",
         "menu_price": "💰 Prices",
@@ -128,6 +142,35 @@ TEXTS = {
         "new_order_admin": "🆕 New order!\n👤 {name} (@{username})\n🥚 {qty} pcs — {total} UZS\n📍 {address}\n📱 {phone}",
         "back": "⬅️ Back",
         "unknown": "Sorry, I didn't understand. Choose a menu option or type a question.",
+        "btn_narx": "💰 Price",
+        "btn_malumot": "ℹ️ Info",
+        "btn_joylashuv": "📍 Location",
+        "btn_aloqa": "📞 Contact",
+    },
+    "de": {
+        "choose_lang": "Tilni tanlang / Choose language / Выберите язык / Sprache wählen:",
+        "welcome": "Hallo, {name}! 🥚\nWillkommen beim Tuxum Market Bot.\nWählen Sie eine Option:",
+        "menu_order": "🛒 Bestellen",
+        "menu_price": "💰 Preise",
+        "menu_ai": "🤖 Chat mit TuxumAI",
+        "menu_contact": "📞 Kontakt",
+        "menu_lang": "🌐 Sprache ändern",
+        "ask_qty": "Wie viele Eier möchten Sie bestellen? (z. B. 30)",
+        "invalid_qty": "Bitte geben Sie eine Zahl ein (z. B. 30).",
+        "ask_address": "Geben Sie die Lieferadresse ein:",
+        "ask_phone": "Senden Sie Ihre Telefonnummer (z. B. +998901234567):",
+        "order_done": "✅ Ihre Bestellung wurde aufgegeben!\n\n🥚 Menge: {qty}\n💵 Summe: {total} UZS\n📍 Adresse: {address}\n📱 Telefon: {phone}\n\nUnser Operator wird sich bald bei Ihnen melden!",
+        "price_info": "💰 Preis pro Ei: {price} UZS\n\nMengenrabatte verfügbar, bestellen Sie über /buyurtma.",
+        "contact_info": "📞 Kontaktieren Sie uns:\nTelefon: +998 90 000 00 00\nAdresse: Taschkent\n\nFragen? Schreiben Sie einfach — TuxumAI hilft Ihnen 🤖",
+        "ai_prompt": "Schreiben Sie Ihre Frage an TuxumAI 👇",
+        "ai_thinking": "TuxumAI denkt nach... 🤔",
+        "new_order_admin": "🆕 Neue Bestellung!\n👤 {name} (@{username})\n🥚 {qty} Stk — {total} UZS\n📍 {address}\n📱 {phone}",
+        "back": "⬅️ Zurück",
+        "unknown": "Entschuldigung, das habe ich nicht verstanden. Wählen Sie eine Option oder stellen Sie eine Frage.",
+        "btn_narx": "💰 Preis",
+        "btn_malumot": "ℹ️ Info",
+        "btn_joylashuv": "📍 Standort",
+        "btn_aloqa": "📞 Kontakt",
     },
 }
 
@@ -221,10 +264,77 @@ def lang_keyboard():
             [
                 {"text": "🇺🇿 O'zbek", "callback_data": "lang_uz"},
                 {"text": "🇷🇺 Русский", "callback_data": "lang_ru"},
+            ],
+            [
                 {"text": "🇬🇧 English", "callback_data": "lang_en"},
-            ]
+                {"text": "🇩🇪 Deutsch", "callback_data": "lang_de"},
+            ],
         ]
     }
+
+
+def answer_callback_query(callback_query_id, text=None, show_alert=False):
+    payload = {"callback_query_id": callback_query_id}
+    if text:
+        payload["text"] = text
+        payload["show_alert"] = show_alert
+    tg_call("answerCallbackQuery", payload)
+
+
+def edit_message_reply_markup(chat_id, message_id, reply_markup):
+    tg_call("editMessageReplyMarkup", {
+        "chat_id": chat_id, "message_id": message_id, "reply_markup": reply_markup,
+    })
+
+
+# ----------------------------------------------------------------------------
+# E'LON (BROADCAST) YARATISH — admin uchun bosqichma-bosqich oqim
+# ----------------------------------------------------------------------------
+
+ANN_KEYS = ["narx", "malumot", "joylashuv", "aloqa"]
+ANN_ADMIN_LABELS = {
+    "narx": "💰 Narx",
+    "malumot": "ℹ️ Ma'lumot",
+    "joylashuv": "📍 Joylashuv",
+    "aloqa": "📞 Aloqa",
+}
+ANN_ASK_TEXT = {
+    "narx": "Narxni kiriting:",
+    "malumot": "Ma'lumotni kiriting:",
+    "joylashuv": "Joylashuvni kiriting:",
+    "aloqa": "Aloqa ma'lumotini kiriting:",
+}
+
+
+def get_admin_broadcast(chat_id):
+    return fb_get(f"admin_broadcast/{chat_id}") or {}
+
+
+def set_admin_broadcast(chat_id, data):
+    fb_set(f"admin_broadcast/{chat_id}", data)
+
+
+def clear_admin_broadcast(chat_id):
+    fb_set(f"admin_broadcast/{chat_id}", {})
+
+
+def button_select_keyboard(selected):
+    rows = []
+    for key in ANN_KEYS:
+        mark = "✅ " if key in selected else ""
+        rows.append([{"text": f"{mark}{ANN_ADMIN_LABELS[key]}", "callback_data": f"elonbtn_{key}"}])
+    rows.append([{"text": "✅ Tayyor", "callback_data": "elonbtn_done"}])
+    return {"inline_keyboard": rows}
+
+
+def announcement_view_keyboard(ann_id, selected_keys, lang):
+    t = TEXTS[lang]
+    label_map = {
+        "narx": t["btn_narx"], "malumot": t["btn_malumot"],
+        "joylashuv": t["btn_joylashuv"], "aloqa": t["btn_aloqa"],
+    }
+    rows = [[{"text": label_map[key], "callback_data": f"annview_{ann_id}_{key}"}] for key in selected_keys]
+    return {"inline_keyboard": rows}
 
 
 def main_menu_keyboard(lang):
@@ -295,7 +405,10 @@ def handle_update(update):
     if "callback_query" in update:
         cq = update["callback_query"]
         chat_id = cq["message"]["chat"]["id"]
+        message_id = cq["message"]["message_id"]
         data = cq.get("data", "")
+        cq_id = cq.get("id", "")
+
         if data.startswith("lang_"):
             lang = data.split("_", 1)[1]
             state = get_user_state(chat_id)
@@ -303,7 +416,55 @@ def handle_update(update):
             state["step"] = None
             set_user_state(chat_id, state)
             name = cq["from"].get("first_name", "")
+            answer_callback_query(cq_id)
             send_message(chat_id, TEXTS[lang]["welcome"].format(name=name), main_menu_keyboard(lang))
+            return
+
+        # --- Admin: e'lon uchun tugma tanlash (toggle) ---
+        if data.startswith("elonbtn_") and ADMIN_CHAT_ID and str(chat_id) == str(ADMIN_CHAT_ID):
+            bstate = get_admin_broadcast(chat_id)
+            if bstate.get("step") != "wait_buttons":
+                answer_callback_query(cq_id)
+                return
+
+            action = data[len("elonbtn_"):]
+            selected = bstate.get("selected", [])
+
+            if action == "done":
+                if not selected:
+                    answer_callback_query(cq_id, "Kamida bitta tugma tanlang!", show_alert=True)
+                    return
+                bstate["step"] = "wait_content"
+                bstate["content_index"] = 0
+                bstate["content"] = {}
+                set_admin_broadcast(chat_id, bstate)
+                answer_callback_query(cq_id)
+                first_key = selected[0]
+                send_message(chat_id, ANN_ASK_TEXT[first_key])
+                return
+
+            if action in selected:
+                selected.remove(action)
+            else:
+                selected.append(action)
+            bstate["selected"] = selected
+            set_admin_broadcast(chat_id, bstate)
+            edit_message_reply_markup(chat_id, message_id, button_select_keyboard(selected))
+            answer_callback_query(cq_id)
+            return
+
+        # --- Har qanday foydalanuvchi: e'londagi tugmani bosganda ---
+        if data.startswith("annview_"):
+            rest = data[len("annview_"):]
+            ann_id, _, key = rest.partition("_")
+            ann = fb_get(f"announcements/{ann_id}") or {}
+            value = ann.get(key)
+            answer_callback_query(cq_id)
+            if value:
+                send_message(chat_id, value)
+            return
+
+        answer_callback_query(cq_id)
         return
 
     if "message" not in update:
@@ -318,28 +479,64 @@ def handle_update(update):
     name = from_user.get("first_name", "do'stim")
     username = from_user.get("username", "-")
 
-    # --- ADMIN: E'lon (broadcast) yuborish: /eloncall <matn> (rasm bilan ham bo'lishi mumkin) ---
+    # --- ADMIN: E'lon yaratish oqimi ---
     if ADMIN_CHAT_ID and str(chat_id) == str(ADMIN_CHAT_ID):
         trigger_text = text if text else caption
-        if trigger_text.startswith("/eloncall"):
-            broadcast_text = trigger_text[len("/eloncall"):].strip()
-            photo_file_id = photos[-1]["file_id"] if photos else None
 
-            if not broadcast_text and not photo_file_id:
-                send_message(chat_id, "Foydalanish: /eloncall <matn>  (rasm bilan yuborsangiz, tavsif (caption) sifatida yozing)")
+        if trigger_text.startswith("/elon"):
+            clear_admin_broadcast(chat_id)
+            set_admin_broadcast(chat_id, {"step": "wait_photo"})
+            send_message(chat_id, "📸 E'lon uchun rasmni yuboring:")
+            return
+
+        bstate = get_admin_broadcast(chat_id)
+        bstep = bstate.get("step")
+
+        if bstep == "wait_photo":
+            if photos:
+                bstate["photo_file_id"] = photos[-1]["file_id"]
+                bstate["step"] = "wait_buttons"
+                bstate["selected"] = []
+                set_admin_broadcast(chat_id, bstate)
+                send_message(chat_id, "Qaysi tugmalar bo'lsin? Kerakli tugmalarni bosing, so'ng \"Tayyor\"ni bosing:",
+                             button_select_keyboard([]))
+            else:
+                send_message(chat_id, "Iltimos, rasm yuboring (/elon bilan boshlangan jarayonni bekor qilish uchun /start yozing).")
+            return
+
+        if bstep == "wait_content":
+            selected = bstate.get("selected", [])
+            idx = bstate.get("content_index", 0)
+            current_key = selected[idx]
+            content = bstate.get("content", {})
+            content[current_key] = text.strip()
+            bstate["content"] = content
+            idx += 1
+
+            if idx < len(selected):
+                bstate["content_index"] = idx
+                set_admin_broadcast(chat_id, bstate)
+                next_key = selected[idx]
+                send_message(chat_id, ANN_ASK_TEXT[next_key])
                 return
+
+            # Hammasi kiritildi — e'lonni yaratib, hammaga yuboramiz
+            ann_id = "".join(random.choices(string.ascii_uppercase + string.digits, k=8))
+            fb_set(f"announcements/{ann_id}", content)
 
             all_users = fb_get("users") or {}
             sent, failed = 0, 0
-            for uid in all_users.keys():
-                try:
-                    if photo_file_id:
-                        send_photo_by_file_id(uid, photo_file_id, caption=broadcast_text)
-                    else:
-                        send_message(uid, broadcast_text)
+            for uid, ustate in all_users.items():
+                ulang = (ustate or {}).get("lang") or "uz"
+                kb = announcement_view_keyboard(ann_id, selected, ulang)
+                res = send_photo_by_file_id(uid, bstate["photo_file_id"], caption="")
+                if res and res.get("ok"):
+                    tg_call("sendMessage", {"chat_id": uid, "text": "👇", "reply_markup": kb})
                     sent += 1
-                except Exception:
+                else:
                     failed += 1
+
+            clear_admin_broadcast(chat_id)
             send_message(chat_id, f"✅ E'lon yuborildi.\nMuvaffaqiyatli: {sent}\nXato: {failed}")
             return
 
