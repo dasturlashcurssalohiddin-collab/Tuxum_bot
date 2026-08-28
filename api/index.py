@@ -51,6 +51,7 @@ import os
 import json
 import time
 import random
+import re
 import string
 import urllib.request
 import urllib.parse
@@ -337,6 +338,24 @@ def announcement_view_keyboard(ann_id, selected_keys, lang):
     return {"inline_keyboard": rows}
 
 
+# Arab/fors va boshqa unicode raqamlarni oddiy ASCII raqamlarga o'giradi
+_DIGIT_MAP = str.maketrans("٠١٢٣٤٥٦٧٨٩۰۱۲۳۴۵۶۷۸۹", "01234567890123456789")
+
+
+def parse_qty(text):
+    """Matn ichidan butun sonni topib qaytaradi (masalan '30 dona' -> 30). Topilmasa None."""
+    if not text:
+        return None
+    normalized = text.translate(_DIGIT_MAP)
+    match = re.search(r"\d+", normalized)
+    if not match:
+        return None
+    try:
+        return int(match.group())
+    except ValueError:
+        return None
+
+
 def main_menu_keyboard(lang):
     t = TEXTS[lang]
     return {
@@ -556,8 +575,8 @@ def handle_update(update):
 
     # --- Buyurtma bosqichlari ---
     if step == "await_qty":
-        if text.strip().isdigit():
-            qty = int(text.strip())
+        qty = parse_qty(text)
+        if qty is not None and qty > 0:
             state["order"]["qty"] = qty
             state["order"]["total"] = qty * EGG_PRICE
             state["step"] = "await_address"
