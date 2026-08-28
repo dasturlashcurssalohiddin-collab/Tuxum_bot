@@ -23,7 +23,12 @@ DEPLOY QO'LLANMASI (VERCEL):
                              (masalan: https://tuxum-market-default-rtdb.firebaseio.com)
        WEBHOOK_SECRET    -> o'zingiz o'ylab topgan maxfiy so'z (ixtiyoriy, xavfsizlik uchun)
 
-4) Deploy qilgandan so'ng, Telegram webhookni shu manzilga ulang (brauzerda oching):
+4) E'LON (BROADCAST) YUBORISH: ADMIN_CHAT_ID sifatida ko'rsatilgan chatdan botga
+   "/eloncall <matn>" yuboring — barcha ro'yxatdan o'tgan foydalanuvchilarga xabar ketadi.
+   Rasm bilan yubormoqchi bo'lsangiz: rasmni botga yuboring va uning tavsifi (caption)
+   qismiga "/eloncall <matn>" deb yozing — rasm + matn hammasiga birga boradi.
+
+5) Deploy qilgandan so'ng, Telegram webhookni shu manzilga ulang (brauzerda oching):
    https://api.telegram.org/bot<BOT_TOKEN>/setWebhook?url=https://<vercel-domeningiz>/api/bot
 
    Masalan:
@@ -203,6 +208,13 @@ def send_audio_bytes(chat_id, audio_bytes, filename="tuxumai.mp3"):
         print("sendAudio error:", e)
 
 
+def send_photo_by_file_id(chat_id, file_id, caption=""):
+    payload = {"chat_id": chat_id, "photo": file_id}
+    if caption:
+        payload["caption"] = caption
+    return tg_call("sendPhoto", payload)
+
+
 def lang_keyboard():
     return {
         "inline_keyboard": [
@@ -300,9 +312,36 @@ def handle_update(update):
     msg = update["message"]
     chat_id = msg["chat"]["id"]
     text = msg.get("text", "")
+    caption = msg.get("caption", "")
+    photos = msg.get("photo")
     from_user = msg.get("from", {})
     name = from_user.get("first_name", "do'stim")
     username = from_user.get("username", "-")
+
+    # --- ADMIN: E'lon (broadcast) yuborish: /eloncall <matn> (rasm bilan ham bo'lishi mumkin) ---
+    if ADMIN_CHAT_ID and str(chat_id) == str(ADMIN_CHAT_ID):
+        trigger_text = text if text else caption
+        if trigger_text.startswith("/eloncall"):
+            broadcast_text = trigger_text[len("/eloncall"):].strip()
+            photo_file_id = photos[-1]["file_id"] if photos else None
+
+            if not broadcast_text and not photo_file_id:
+                send_message(chat_id, "Foydalanish: /eloncall <matn>  (rasm bilan yuborsangiz, tavsif (caption) sifatida yozing)")
+                return
+
+            all_users = fb_get("users") or {}
+            sent, failed = 0, 0
+            for uid in all_users.keys():
+                try:
+                    if photo_file_id:
+                        send_photo_by_file_id(uid, photo_file_id, caption=broadcast_text)
+                    else:
+                        send_message(uid, broadcast_text)
+                    sent += 1
+                except Exception:
+                    failed += 1
+            send_message(chat_id, f"✅ E'lon yuborildi.\nMuvaffaqiyatli: {sent}\nXato: {failed}")
+            return
 
     state = get_user_state(chat_id)
     lang = state.get("lang")
